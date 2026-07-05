@@ -25,25 +25,27 @@ jobs:
         
         cd invoiceapp
         cordova platform add android
-        cd ..
         
-        # .github, invoiceapp සහ .git හැර අනිත් ඔක්කොම HTML/CSS ෆයිල් www එකට කොපි කරනවා
-        rsync -av --exclude='.github' --exclude='invoiceapp'https://adminasasalanka.github.io/teallankainvoices/index.html' ./ invoiceapp/www/
-        
-        if [ -f "icon.png" ]; then
-          mkdir -p invoiceapp/res
-          cp icon.png invoiceapp/res/icon.png
+        # icon එකක් තියෙනවා නම් res folder එකට copy කරනවා
+        if [ -f "../icon.png" ]; then
+          mkdir -p res
+          cp ../icon.png res/icon.png
         fi
         
-        cd invoiceapp
+        # config.xml එක සකස් කිරීම - මෙතන content src එකට ඔයාගේ URL එක දාලා තියෙන්නේ
         cat <<EOF > config.xml
         <?xml version='1.0' encoding='utf-8'?>
         <widget id="com.invoice.teallanka" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
             <name>TealLanka Invoice</name>
             <description>Teal Lanka Invoice Generator App</description>
             <author email="dev@callback.com" href="http://cordova.io">Teal Lanka Team</author>
-            <content src="index.html" />
+            
+            <content src="https://adminasasalanka.github.io/teallankainvoices/index.html" />
+            
             <access origin="*" />
+            <allow-navigation href="https://adminasasalanka.github.io/*" />
+            <allow-navigation href="*" />
+            
             <icon src="res/icon.png" />
         </widget>
         EOF
