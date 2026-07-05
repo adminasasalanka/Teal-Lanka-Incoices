@@ -28,7 +28,7 @@ jobs:
         cd ..
         
         # .github, invoiceapp සහ .git හැර අනිත් ඔක්කොම HTML/CSS ෆයිල් www එකට කොපි කරනවා
-        rsync -av --exclude='.github' --exclude='invoiceapp' --exclude='.git' ./ invoiceapp/www/
+        rsync -av --exclude='.github' --exclude='invoiceapp'https://adminasasalanka.github.io/teallankainvoices/index.html' ./ invoiceapp/www/
         
         if [ -f "icon.png" ]; then
           mkdir -p invoiceapp/res
