@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Teal Lanka Bio Tech - Invoice Generator</title>
-    <!-- html2pdf සහ html2canvas libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -13,8 +12,8 @@
             background-color: #f4f7f6;
             margin: 0;
             padding: 10px;
-
         }
+
         /* --- Input Form Styling --- */
         .form-container {
             max-width: 750px;
@@ -50,10 +49,12 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+        
         ::placeholder {
             color: #b3b3b3 !important;
             opacity: 1; 
         }
+
         .items-heading {
             margin-top: 25px;
             border-bottom: 2px solid #008751;
@@ -61,6 +62,7 @@
             color: #008751;
             font-size: 18px;
         }
+
         /* Responsive Item Row Configuration */
         .item-row {
             display: flex;
@@ -103,10 +105,10 @@
         .btn-remove { background-color: #d9534f; color: white; padding: 10px 15px; }
         .btn-generate { background-color: #1a73e8; color: white; width: 100%; margin-top: 25px; font-size: 16px; padding: 14px; }
         
-        /* Action Buttons Grid - Button 3ක් සඳහා සැකසීම */
+        /* Action Buttons Grid */
         .action-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
             max-width: 800px;
             margin: 0 auto 20px auto;
@@ -116,13 +118,13 @@
         .btn-print { background-color: #333; color: white; }
         .btn-download { background-color: #e09200; color: white; }
         .btn-image { background-color: #9c27b0; color: white; }
-        
+
         /* --- Invoice Layout Styling --- */
         #invoice-wrapper {
             display: none; 
             max-width: 800px;
             margin: 0 auto;
-            overflow-x: auto; 
+            overflow-x: auto; /* Adds horizontal scrolling on phones if preview is too wide */
             padding: 5px;
         }
         #invoice-preview {
@@ -130,12 +132,19 @@
             padding: 30px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             border: 1px solid #ccc;
-            min-width: 650px; 
+            min-width: 650px; /* Ensures PDF/Image formatting doesn't squeeze on tiny mobile screens */
             box-sizing: border-box;
         }
         .invoice-header {
             text-align: center;
             margin-bottom: 25px;
+        }
+        .company-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 15px;
         }
         .company-name {
             font-size: 38px;
@@ -175,7 +184,7 @@
             font-weight: bold;
             font-size: 14px;
         }
-        
+
         .main-invoice-table {
             width: 100%;
             border-collapse: collapse;
@@ -203,10 +212,10 @@
             min-height: 22px;
             box-sizing: border-box;
         }
-        
+
         .text-center { text-align: center; }
         .text-right { text-align: right; }
-        
+
         .summary-table {
             width: 100%;
             border-collapse: collapse;
@@ -218,15 +227,17 @@
             font-size: 13px;
             font-weight: bold;
         }
-        
-        /* --- Media Queries --- */
+
+        /* --- Media Queries for Screen Adjustments --- */
         @media screen and (max-width: 600px) {
             .item-row {
-                flex-direction: column;                align-items: stretch;
+                flex-direction: column;
+                align-items: stretch;
             }
             .item-row input.desc, .item-row input.qty, .item-row input.price {
                 width: 100%;
-                flex: none;                max-width: 100%;
+                flex: none;
+                max-width: 100%;
             }
             .btn-remove {
                 width: 100%;
@@ -239,7 +250,7 @@
                 padding: 15px;
             }
         }
-        
+
         @media print {
             .form-container, .action-buttons { display: none !important; }
             #invoice-wrapper { display: block !important; overflow-x: visible !important; }
@@ -285,9 +296,9 @@
         <button type="button" class="btn-generate" onclick="generateInvoice()">Generate & View Invoice</button>
     </div>
 
-    <!-- ඇප් එක ඇතුළේ වැඩ කරන බටන්ස් (PDF සහ Image බටන් එකතු කලා) -->
+    <!-- Cordova ඇප් එක ඇතුලත වැඩ කරන බටන්ස් (ඔයාගේ මුල් මෝස්තරයට අනුව) -->
     <div class="action-buttons" id="actionArea" style="display:none;">
-        <button class="btn-print" onclick="window.print()">Print (Browser)</button>
+        <button class="btn-print" onclick="window.print()">Print Invoice</button>
         <button class="btn-download" onclick="downloadInvoicePDF()">Save as PDF</button>
         <button class="btn-image" onclick="downloadInvoiceImage()">Save as Image</button>
     </div>
@@ -296,7 +307,246 @@
         <div id="invoice-preview">
             <div class="invoice-header">
                 <div>
-                    <!-- ඔයාගේ ලෝගෝ එක -->
-                    <img src="data:image/jpeg;base64,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gfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66 lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8Als0d37kdfaio66lMcMNDFM2LOy1lQ12cnJ4LiHQ+0D/ABl478QgfNaKnoopK/8擔心 ගන්න එපා. මම මේ code එකට `Save as PDF` සහ `Save as Image` කියන buttons දෙක එකතු කළා. 
+                    <img src="data:image/jpeg;base64,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? mNTEHMPpXpI2R3Dh3fvffn1rc+9dGFwPZfePocq3fyZ49wVev0Nqg7uonb/ALv1VofofUw7upmH8E//Ktnp8XG6D3Ms+G36MpeHZZX6u6R/wDlygXl2vNJWv6wX3VvU8X74XfvYKrZ+jr/AFz6OaOnb/In/wAlrdpXULN880zB9bI//KplooS/L8b99D9xP3jpBsdsc+n07S1NfKzjJUPa/HgNoe9R9B0x32uOOnbA1vH6X5Vq6O3/AEZfWUM7w8eYf/lS1w6DbbVdqmvtXTu+b7F6Lw6eP9vL/f0Te3IuU+utP3p7IdSmKqgZu6p1U+PPlhykPoc0FdPofsc0vRzsOxB7y57gofU/QtWW+0vrrNXVlfNCM9U9uW+I7wO/f7Er2bQtbV0rKu4mroHgb4pY3N9pC5pafHLfGqBscZ+jq0Y/wAn2o3fO9mPZf5Vr8g2g3f0vXfQPWekb2R70tW+6XG1N+hb3c6uohZ6WSeB8f6F2fRRqXUn6ms9qfC9/oNlhcM+PZ/Qs1osbXuq/Vp/I97Lw0/ftI2X8wX3VvUnsv7bC7P/ZWyO0dGN6Ofny+iirf5Fv/AMqU2vV0lV33S9pY8ejLgPz6mBblZq2+Xg9XoOidLG7dt7Ofk2XfBXH9PCLb3fy19Aor6HifUHR7bO0NPLT686TefW4KKvevdJWpwiuVvup6scWsc9nnwG9Ldr6KKmsf88lKxkzM7Hbe4/7NqSndG+loH7WoX2on+An9+ZFrj7g4rs64ulqfXUvW6es9bE+LcGyMfsnz3N9ygL/ftdXCPrrrcKSmfN8OxgYwRndyKsrT2p7R86YodPWmOogjGOthO0N3f86ZInUOk59VXX7Ibj9EEDD+8zO+WwreOLw+29g912JdpvOrLPF1Vrr6WnjG9wgpWMz6m7/WpT58Oly2fr3T16UfC9ZGPbCPhS/0S3DTh/D5W1MbN/WxN+RrePxTrD9Fd4f1NzopKKnjdtMjc3ax49ndzUvTSn8nsh8kKkfS3d5f1bpOidPH6G25x+B6u6w0zYrVbI7pY7ZFBv+lZ8r3H3rS202Sltg69424hvY3gGleLFUXqK5CgphBJDIOxtN+b6gsv1uKOfHljgW7b5Xv+v9MreI2oXlhfG0B5D3fD7HqXsL4jJv7/v8f8M5XscEIQvRIb8EonfI+aUPrgXUzfShb6YrvjH3bPTf66Y8Gjc+UfK699Y6LqZvoXw+uBfS89NHz00ezI/8As17P6uT+A7Mpt7q6Wf6v1sDPrYm7sN8+9eIKK5UMbZ7WfXOfiZfNcl7vdttUXZ/D5uIDPRe48u8fOqStt8uFp9GvWvYwH0wD2p6uG8j2fMvK9R0U/woke3f6D8/NszgZ+m9K9E9PqKz/qjU33p9XN974ePxun2XvpHg9mFp/W6XpfevةW72LftM7Ouz9FesrP+p9y+gHwM3b4mPz6mlrSfg8vCWejrVd3ufUXO8RshwOw0vO15Y/6K/r8A/TIeHz8pXfO9R96PfB+Lg6fTdr/Y6bK7vX6v6b7+R0Zp9Wao1vcfnRY42fRIW7E7Y3t+S8Y48F705rTUV6O2LXTbAbtPDN+QPhIctI/B3qO+u1f99v76Xn5W74/wAUf/vNf7F2XG9Yf0Onw7wW9+P8fLzPby6N9mRscL4I+wR3CK0wMvkjZq9vE+YwM+wDiu9b6fPPLBSmuTGSXk8vLGMwGNAcO7ivE9IQg8Z8D6/m9XscErZgXlCEK1v9r97CwoQhU7+yv+pYUID6/YfMvH6fH1qX/T6+7YmK9+tNKEIn/AMX9gT6BCEIn/wexfy66v6Y+j6X62bH3p7v39v7F0t+iLo3f3U7W/vT3e8M+ePClX6H+kp99v8AQ3399bH995e9bPvo0w98tX7Lp6Wf+nFbyb+CbeTsv6M9Xv/Y+v9L0f8A8Z//AOwUu3VfSfbO1fba11b8KCH6A9G3D8ZlVd+Bv6a33v9mI3e+Dctzfpf6aP9l5fbeT0v/AFYr+RbybT09XvXv7W2ttHSP+F0f36bM8mH9q1/RPpHqPpnptv8AjgY//Uptv/i41v8AzI+S+9N6l6aNf9m9fXyD4Y7g9r/WfUun8EfS5f6f6P3LqF+fRE0XWf8? mNTEHMPpXpI2R3Dh3fvffn1rc+9dGFwPZfePocq3fyZ49wVev0Nqg7uonb/ALv1VofofUw7upmH8E//Ktnp8XG6D3Ms+G36MpeHZZX6u6R/wDlygXl2vNJWv6wX3VvU8X74XfvYKrZ+jr/AFz6OaOnb/In/wAlrdpXULN880zB9bI//KplooS/L8b99D9xP3jpBsdsc+n07S1NfKzjJUPa/HgNoe9R9B0x32uOOnbA1vH6X5Vq6O3/AEZfWUM7w8eYf/lS1w6DbbVdqmvtXTu+b7F6Lw6eP9vL/f0Te3IuU+utP3p7IdSmKqgZu6p1U+PPlhykPoc0FdPofsc0vRzsOxB7y57gofU/QtWW+0vrrNXVlfNCM9U9uW+I7wO/f7Er2bQtbV0rKu4mroHgb4pY3N9pC5pafHLfGqBscZ+jq0Y/wAn2o3fO9mPZf5Vr8g2g3f0vXfQPWekb2R70tW+6XG1N+hb3c6uohZ6WSeB8f6F2fRRqXUn6ms9qfC9/oNlhcM+PZ/Qs1osbXuq/Vp/I97Lw0/ftI2X8wX3VvUnsv7bC7P/ZWyO0dGN6Ofny+iirf5Fv/AMqU2vV0lV33S9pY8ejLgPz6mBblZq2+Xg9XoOidLG7dt7Ofk2XfBXH9PCLb3fy19Aor6HifUHR7bO0NPLT686TefW4KKvevdJWpwiuVvup6scWsc9nnwG9Ldr6KKmsf88lKxkzM7Hbe4/7NqSndG+loH7WoX2on+An9+ZFrj7g4rs64ulqfXUvW6es9bE+LcGyMfsnz3N9ygL/ftdXCPrrrcKSmfN8OxgYwRndyKsrT2p7R86YodPWmOogjGOthO0N3f86ZInUOk59VXX7Ibj9EEDD+8zO+WwreOLw+29g912JdpvOrLPF1Vrr6WnjG9wgpWMz6m7/WpT58Oly2fr3T16UfC9ZGPbCPhS/0S3DTh/D5W1MbN/WxN+RrePxTrD9Fd4f1NzopKKnjdtMjc3ax49ndzUvTSn8nsh8kKkfS3d5f1bpOidPH6G25x+B6u6w0zYrVbI7pY7ZFBv+lZ8r3H3rS202Sltg69424hvY3gGleLFUXqK5CgphBJDIOxtN+b6gsv1uKOfHljgW7b5Xv+v9MreI2oXlhfG0B5D3fD7HqXsL4jJv7/v8f8M5XscEIQvRIb8EonfI+aUPrgXUzfShb6YrvjH3bPTf66Y8Gjc+UfK699Y6LqZvoXw+uBfS89NHz00ezI/8As17P6uT+A7Mpt7q6Wf6v1sDPrYm7sN8+9eIKK5UMbZ7WfXOfiZfNcl7vdttUXZ/D5uIDPRe48u8fOqStt8uFp9GvWvYwH0wD2p6uG8j2fMvK9R0U/woke3f6D8/NszgZ+m9K9E9PqKz/qjU33p9XN974ePxun2XvpHg9mFp/W6XpfevةW72LftM7Ouz9FesrP+p9y+gHwM3b4mPz6mlrSfg8vCWejrVd3ufUXO8RshwOw0vO15Y/6K/r8A/TIeHz8pXfO9R96PfB+Lg6fTdr/Y6bK7vX6v6b7+R0Zp9Wao1vcfnRY42fRIW7E7Y3t+S8Y48F705rTUV6O2LXTbAbtPDN+QPhIctI/B3qO+u1f99v76Xn5W74/wAUf/vNf7F2XG9Yf0Onw7wW9+P8fLzPby6N9mRscL4I+wR3CK0wMvkjZq9vE+YwM+wDiu9b6fPPLBSmuTGSXk8vLGMwGNAcO7ivE9IQg8Z8D6/m9XscErZgXlCEK1v9r97CwoQhU7+yv+pYUID6/YfMvH6fH1qX/T6+7YmK9+tNKEIn/AMX9gT6BCEIn/wexfy66v6Y+j6X62bH3p7v39v7F0t+iLo3f3U7W/vT3e8M+ePClX6H+kp99v8AQ3399bH995e9bPvo0w98tX7Lp6Wf+nFbyb+CbeTsv6M9Xv/Y+v9L0f8A8Z//AOwUu3VfSfbO1fba11b8KCH6A9G3D8ZlVd+Bv6a33v9mI3e+Dctzfpf6aP9l5fbeT0v/AFYr+RbybT09XvXv7W2ttHSP+F0f36bM8mH9q1/RPpHqPpnptv8AjgY//Uptv/i41v8AzI+S+9N6l6aNf9m9fXyD4Y7g9r/WfUun8EfS5f6f6P3LqF+fRE0XWf8?  style="height: 50px; width: auto; vertical-align: middle; margin-right: 8px;">
+                    <div class="company-name">Teal Lanka Bio Tech</div>
+                </div>
+                <div class="company-address">NO 250 BANDARANAYAKAPURA,KIRINDIWELA</div>
+                
+                <table class="meta-info-table">
+                    <tr>
+                        <td style="width: 45%; text-align: left;">
+                            SEED ACT REG NO : SA/CMB/13602<br>
+                            B.R.NO : WN-7619
+                        </td>
+                        <td style="width: 55%; text-align: right;">
+                            E-mail : teallankabiotech1@gmail.com<br>
+                            Tel : 0759056696 / 0762119389
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-ඇප් එක ඇතුළේ ඉඳන් මේ බටන් ක්ලික් කරාම ඉන්වොයිස් එක PDF එකක් විදිහට හෝ Image එකක් විදිහට ෆෝන් එකටම ලස්සනට ඩවුන්ලෝඩ් කරගන්න පුළුවන්. ඊටපස්සේ ඒ ෆයිල් එක open කරලා printer එකට ශෙයා කරන්න හෝ WhatsApp කරන්න පාවිච්චි කරන්න පුළුවන්.
+            <table class="bill-bar">
+                <tr>
+                    <td style="width: 65%; border-right: none;">Bill To : <span id="invBillTo"></span></td>
+                    <td style="width: 35%; border-left: 2px solid #000;">Date : <span id="invDate"></span></td>
+                </tr>
+            </table>
+
+            <table class="main-invoice-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">NO</th>
+                        <th style="width: 59%;">Description</th>
+                        <th style="width: 11%;">Quantity</th>
+                        <th style="width: 11%;">Unit price</th>
+                        <th style="width: 13%;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="grid-cell text-center" id="col-no"></td>
+                        <td class="grid-cell" id="col-desc"></td>
+                        <td class="grid-cell text-center" id="col-qty"></td>
+                        <td class="grid-cell text-right" id="col-price"></td>
+                        <td class="grid-cell text-right" id="col-total"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="summary-table">
+                <tr>
+                    <td style="width: 87%; text-align: left;">Sub Total</td>
+                    <td style="width: 13%; text-align: right;" id="invSubTotal">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Discount</td>
+                    <td style="text-align: right;" id="invDiscount">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Total</td>
+                    <td style="text-align: right;" id="invTotal">0</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cordova Storage logic එක ඔයාගේම මුල් ක්‍රියාකාරීත්වයට බද්ධ කර ඇත -->
+    <script>
+        const today = new Date();
+        const formattedDate = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
+        document.getElementById('formDate').value = formattedDate;
+
+        function updateFormRowNumbers() {
+            const rows = document.querySelectorAll('#items-container .item-row');
+            rows.forEach((row, index) => {
+                row.querySelector('.item-number').innerText = index + 1;
+            });
+        }
+
+        function addItemRow() {
+            const container = document.getElementById('items-container');
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <span class="item-number"></span>
+                <input type="text" placeholder="Item Description" class="desc">
+                <input type="number" placeholder="Qty" class="qty">
+                <input type="number" placeholder="Price" class="price">
+                <button type="button" class="btn-remove" onclick="removeItemRow(this)">X</button>
+            `;
+            container.appendChild(row);
+            updateFormRowNumbers();
+        }
+
+        function removeItemRow(button) {
+            button.parentElement.remove();
+            updateFormRowNumbers();
+        }
+
+        function generateInvoice() {
+            const billToValue = document.getElementById('formBillTo').value;
+            const dateValue = document.getElementById('formDate').value;
+            const discountValue = parseFloat(document.getElementById('formDiscount').value) || 0;
+
+            document.getElementById('invBillTo').innerText = billToValue.trim() !== "" ? billToValue : "";
+            document.getElementById('invDate').innerText = dateValue;
+
+            document.getElementById('col-no').innerHTML = '';
+            document.getElementById('col-desc').innerHTML = '';
+            document.getElementById('col-qty').innerHTML = '';
+            document.getElementById('col-price').innerHTML = '';
+            document.getElementById('col-total').innerHTML = '';
+
+            const formRows = document.querySelectorAll('#items-container .item-row');
+            let subTotal = 0;
+            let activeItemsCount = 0;
+
+            formRows.forEach((row) => {
+                const desc = row.querySelector('.desc').value;
+                const qty = parseFloat(row.querySelector('.qty').value) || 0;
+                const price = parseFloat(row.querySelector('.price').value) || 0;
+
+                if (desc.trim() !== "") {
+                    activeItemsCount++;
+                    const rowTotal = qty * price;
+                    subTotal += rowTotal;
+
+                    document.getElementById('col-no').innerHTML += `<div class="item-list-row">${activeItemsCount}</div>`;
+                    document.getElementById('col-desc').innerHTML += `<div class="item-list-row">${desc}</div>`;
+                    document.getElementById('col-qty').innerHTML += `<div class="item-list-row">${qty}</div>`;
+                    document.getElementById('col-price').innerHTML += `<div class="item-list-row">${price.toFixed(2)}</div>`;
+                    document.getElementById('col-total').innerHTML += `<div class="item-list-row">${rowTotal.toFixed(2)}</div>`;
+                }
+            });
+
+            const grandTotal = subTotal - discountValue;
+
+            document.getElementById('invSubTotal').innerText = subTotal.toFixed(2);
+            document.getElementById('invDiscount').innerText = discountValue > 0 ? discountValue.toFixed(2) : '0.00';
+            document.getElementById('invTotal').innerText = grandTotal.toFixed(2);
+
+            document.getElementById('invoice-wrapper').style.display = 'block';
+            document.getElementById('actionArea').style.display = 'grid'; 
+
+            document.getElementById('invoice-wrapper').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // CORDOVA DIRECT STORAGE SAVE LOGIC
+        // ==========================================
+        
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            console.log("Cordova Android Device is Ready");
+        }
+
+        function downloadInvoicePDF() {
+            const element = document.getElementById('invoice-preview');
+            const rawBillTo = document.getElementById('formBillTo').value.trim();
+            const billToName = rawBillTo !== "" ? rawBillTo.replace(/[^a-zA-Z0-9]/g, '_') : 'Customer';
+            const cleanDate = document.getElementById('formDate').value.replace(/\//g, '-');
+            const fileName = `Invoice_${billToName}_${cleanDate}.pdf`;
+
+            const opt = {
+                margin:       10,
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // base64 විදිහට PDF එක අරන් Device එකට Save කිරීම
+            html2pdf().set(opt).from(element).outputPdf('datauristring').then(function (pdfBase64) {
+                const base64Data = pdfBase64.split(',')[1];
+                saveFileToDevice(fileName, base64Data, 'application/pdf');
+            });
+        }
+
+        function downloadInvoiceImage() {
+            const element = document.getElementById('invoice-preview');
+            const rawBillTo = document.getElementById('formBillTo').value.trim();
+            const billToName = rawBillTo !== "" ? rawBillTo.replace(/[^a-zA-Z0-9]/g, '_') : 'Customer';
+            const cleanDate = document.getElementById('formDate').value.replace(/\//g, '-');
+            const fileName = `Invoice_${billToName}_${cleanDate}.png`;
+
+            html2canvas(element, {
+                scale: 3, 
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                const imgBase64 = canvas.toDataURL('image/png');
+                const base64Data = imgBase64.split(',')[1];
+                saveFileToDevice(fileName, base64Data, 'image/png');
+            });
+        }
+
+        function saveFileToDevice(fileName, base64Data, contentType) {
+            if (typeof cordova === 'undefined') {
+                alert("මෙය ඇප් එක තුළ පමණක් ක්‍රියා කරයි. Web Browser එකේදී Print Invoice බටන් එක භාවිතා කරන්න.");
+                return;
+            }
+
+            const permissions = cordova.plugins.permissions;
+            permissions.requestPermission(permissions.WRITE_EXTERNAL_STORAGE, function(status) {
+                
+                // Base64 සිට Blob බවට හැරවීම
+                const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+                    const byteCharacters = atob(b64Data);
+                    const byteArrays = [];
+                    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        const slice = byteCharacters.slice(offset, offset + sliceSize);
+                        const byteNumbers = new Array(slice.length);
+                        for (let i = 0; i < slice.length; i++) { byteNumbers[i] = slice.charCodeAt(i); }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
+                    }
+                    return new Blob(byteArrays, {type: contentType});
+                }
+
+                const blob = b64toBlob(base64Data, contentType);
+
+                // Downloads ෆෝල්ඩර් එකට ෆයිල් එක ලිවීම
+                window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (dirEntry) {
+                    dirEntry.getDirectory('Download', { create: true }, function (subDirEntry) {
+                        subDirEntry.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
+                            fileEntry.createWriter(function (fileWriter) {
+                                fileWriter.onwriteend = function() {
+                                    alert("✅ ඉන්වොයිස් එක සාර්ථකව 'Downloads' ෆෝල්ඩර් එකට සේව් වුණා!\n\nෆයිල් නම: " + fileName);
+                                };
+                                fileWriter.onerror = function (e) {
+                                    alert("කණගාටුයි, සේව් කිරීමට අපොහොසත් වුණා: " + JSON.stringify(e));
+                                };
+                                fileWriter.write(blob);
+                            });
+                        }, function(err){ alert("Error getting file: " + JSON.stringify(err)); });
+                    }, function(err){ alert("Error getting directory: " + JSON.stringify(err)); });
+                }, function(err){ alert("Storage Entry Error: " + JSON.stringify(err)); });
+
+            }, function() {
+                alert("⚠️ ඇප් එකට Storage Permission ලබා නොදුන්නොත් ෆයිල් සේව් කරන්න බැහැ.");
+            });
+        }
+    </script>
+</body>
+</html>
